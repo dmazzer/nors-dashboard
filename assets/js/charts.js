@@ -226,7 +226,7 @@ Keen.ready(function(){
     var energy_ch2_vrms_gage_avg = new Keen.Query("average", {
         eventCollection: "stream",
         targetProperty: "sensor_data.ch2.Vrms",
-        timeframe: "this_5_hours",
+        timeframe: "this_1_hours",
         timezone: "UTC"
     });
 
@@ -404,11 +404,17 @@ Keen.ready(function(){
     });    
 
 
-    //    setInterval(function(){
-    //        //chart_bmp_pres_avg.prepare(); // restart the spinner
-    //        req_bmp_pres_avg.refresh();
-    //        req_temp_avg.refresh();
-    //        console.log('refresh')
-    //    }, 120*1000);
+    setInterval(function(){
+        //chart_bmp_pres_avg.prepare(); // restart the spinner
+        req_bmp_pres_avg.refresh();
+        req_temp_avg.refresh();
+        req_irms_avg.refresh();
+        req_vrms_avg.refresh();
+        client.run(energy_ch1_vrms_gage_avg, function(err, res){energy_ch1_vrms_gage.refresh(res.result)});
+        client.run(energy_ch1_irms_gage_avg, function(err, res){energy_ch1_irms_gage.refresh(res.result)});
+        client.run(energy_ch2_vrms_gage_avg, function(err, res){energy_ch2_vrms_gage.refresh(res.result)});
+        client.run(energy_ch2_irms_gage_avg, function(err, res){energy_ch2_irms_gage.refresh(res.result)});
+        console.log('refresh')
+    }, 20*60*1000);
 
 });

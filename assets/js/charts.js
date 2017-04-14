@@ -132,38 +132,19 @@ Keen.ready(function(){
             }
         }  
     })
-        .prepare();
+    .prepare();
 
-    var req_temp_avg = client.run([bmp180_temp_avg,dht_temp_avg],function(err, response) {
+    var req_temp_avg = client.run(bmp180_temp_avg,function(err, response) {
         if (err) {
             // Display the API error
             chart_temp_avg.error(err.message);
             console.log(err.message);
         }
         else {
-            var result1 = response[0].result  // data from first query
-            var result2 = response[1].result  // data from second query
-            var data = []  // place for combined results
-            var i=0
-
-            while (i < result1.length) {
-
-                data[i]={ // format the data so it can be charted
-                    timeframe: result1[i]["timeframe"],
-                    value: [
-                        { category: "bmp", result: result1[i]["value"] },
-                        { category: "dht", result: result2[i]["value"] }
-                    ]
-                }
-                if (i == result1.length-1) { // chart the data
-                    chart_temp_avg
-                        .parseRawData({ result: data })
-                        .render();
-                }
-                i++;
-            }
+            chart_temp_avg
+            .parseRequest(this)
+            .render();
         }
-
     });    
 
 
@@ -188,16 +169,16 @@ Keen.ready(function(){
         timezone: "UTC"
     });
 
-    var energy_ch1_irms_gage_avg = new Keen.Query("average", {
+    var energy_ch1_irms_gage_avg = new Keen.Query("minimum", {
         eventCollection: "stream",
         targetProperty: "sensor_data.ch1.Irms",
-        timeframe: "this_5_hours",
+        timeframe: "this_30_minutes",
         timezone: "UTC"
     });
-    var energy_ch2_irms_gage_avg = new Keen.Query("average", {
+    var energy_ch2_irms_gage_avg = new Keen.Query("minimum", {
         eventCollection: "stream",
         targetProperty: "sensor_data.ch2.Irms",
-        timeframe: "this_5_hours",
+        timeframe: "this_30_minutes",
         timezone: "UTC"
     });
 
@@ -217,16 +198,16 @@ Keen.ready(function(){
         timezone: "UTC"
     });
 
-    var energy_ch1_vrms_gage_avg = new Keen.Query("average", {
+    var energy_ch1_vrms_gage_avg = new Keen.Query("minimum", {
         eventCollection: "stream",
         targetProperty: "sensor_data.ch1.Vrms",
-        timeframe: "this_5_hours",
+        timeframe: "this_30_minutes",
         timezone: "UTC"
     });
-    var energy_ch2_vrms_gage_avg = new Keen.Query("average", {
+    var energy_ch2_vrms_gage_avg = new Keen.Query("minimum", {
         eventCollection: "stream",
         targetProperty: "sensor_data.ch2.Vrms",
-        timeframe: "this_1_hours",
+        timeframe: "this_30_minutes",
         timezone: "UTC"
     });
 
@@ -237,7 +218,7 @@ Keen.ready(function(){
         value: 0,
         min: 0,
         max: 20,
-        title: "F1 - Corrente",
+        title: "Corrente (Fase A)",
         decimals: 2,
         humanFriendlyDecimal: 2
     });
@@ -250,7 +231,7 @@ Keen.ready(function(){
         value: 0,
         min: 0,
         max: 20,
-        title: "F2 - Corrente",
+        title: "Corrente (Fase B)",
         decimals: 2,
         humanFriendlyDecimal: 2
     });
@@ -263,7 +244,7 @@ Keen.ready(function(){
         value: 0,
         min: 0,
         max: 150,
-        title: "F1 - Tensão",
+        title: "Tensão (Fase A)",
         decimals: 2,
         humanFriendlyDecimal: 2
     });
@@ -276,7 +257,7 @@ Keen.ready(function(){
         value: 0,
         min: 0,
         max: 150,
-        title: "F2 - Tensão",
+        title: "Tensão (Fase B)",
         decimals: 2,
         humanFriendlyDecimal: 2
     });
@@ -292,7 +273,7 @@ Keen.ready(function(){
         .chartType("linechart")
         .height (150)
         .width("auto")
-        .title(false)
+        .title("Daily revenue (7 days)")
         .chartOptions({
         chartArea: {
             height: "80%",
@@ -330,8 +311,8 @@ Keen.ready(function(){
                 data[i]={ // format the data so it can be charted
                     timeframe: result1[i]["timeframe"],
                     value: [
-                        { category: "f1", result: result1[i]["value"] },
-                        { category: "f2", result: result2[i]["value"] }
+                        { category: "Tensão (A)", result: result1[i]["value"] },
+                        { category: "Tensão (B)", result: result2[i]["value"] }
                     ]
                 }
                 if (i == result1.length-1) { // chart the data
@@ -389,8 +370,8 @@ Keen.ready(function(){
                 data[i]={ // format the data so it can be charted
                     timeframe: result1[i]["timeframe"],
                     value: [
-                        { category: "f1", result: result1[i]["value"] },
-                        { category: "f2", result: result2[i]["value"] }
+                        { category: "Corrente (A)", result: result1[i]["value"] },
+                        { category: "Corrente (B)", result: result2[i]["value"] }
                     ]
                 }
                 if (i == result1.length-1) { // chart the data

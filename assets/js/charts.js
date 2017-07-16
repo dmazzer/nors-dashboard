@@ -54,8 +54,61 @@ Keen.ready(function(){
         timezone: "UTC"
     });
 
+    var bmp_hum_avg = new Keen.Query("average", {
+        eventCollection: "stream",
+        interval: "hourly",
+        targetProperty: "sensor_data.hum",
+        timeframe: "this_5_days",
+        timezone: "UTC"
+    });
 
     // Charts ///////////////////////////////////////////////////////////
+
+    ///////////
+    var chart_bmp_hum_avg = new Keen.Dataviz();
+
+    chart_bmp_hum_avg
+        .el(document.getElementById("chart_08"))
+        .chartType("linechart")
+        .title(false)
+        .height(250)
+        .width("auto")
+        .chartOptions({
+        chartArea: {
+            height: "80%",
+            left: "5%",
+            top: "5%",
+            width: "75%"
+        },
+        hAxis: {
+            format:'d/MMM H:M',
+            //            gridlines:  {count: 12}
+        },
+
+        vAxis: { 
+            viewWindow: {
+                min: 0,
+                max: 100
+            }
+        },
+
+
+        isStacked: true
+
+    })
+        .prepare();
+
+    var req_bmp_hum_avg = client.run(bmp_hum_avg, function(err, res){
+        if (err) {
+            chart_bmp_hum_avg.error(err.message);
+        }
+        else {
+            chart_bmp_hum_avg
+                .parseRequest(this)
+                //.title("New Customers per Week")
+                .render();
+        }
+    });
 
     ///////////
     var chart_bmp_pres_avg = new Keen.Dataviz();
@@ -98,7 +151,7 @@ Keen.ready(function(){
         else {
             chart_bmp_pres_avg
                 .parseRequest(this)
-                .title("New Customers per Week")
+                //.title("New Customers per Week")
                 .render();
         }
     });
@@ -388,6 +441,7 @@ Keen.ready(function(){
     setInterval(function(){
         //chart_bmp_pres_avg.prepare(); // restart the spinner
         req_bmp_pres_avg.refresh();
+        req_bmp_hum_avg.refresh();
         req_temp_avg.refresh();
         req_irms_avg.refresh();
         req_vrms_avg.refresh();
